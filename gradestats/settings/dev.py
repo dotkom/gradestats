@@ -9,3 +9,17 @@ SECRET_KEY = "!lb^1kz*y+!7%p^x8@ow+cm+m+u%5r*ra^#ozmq%_9vde9cel7"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "static/")
 STATIC_URL = "/static/"
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

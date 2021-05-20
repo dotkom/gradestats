@@ -72,7 +72,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
+        "authentication.backend.OIDCUserAuthentication",
     ),
 }
 

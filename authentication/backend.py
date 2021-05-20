@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
+from mozilla_django_oidc.contrib.drf import OIDCAuthentication
 
 
 def resolve_names(full_name: str):
@@ -12,6 +13,7 @@ def resolve_names(full_name: str):
 
 
 class OIDCUserAuthenticationBackend(OIDCAuthenticationBackend):
+    cache = {}
     def get_username(self, claims: dict):
         email: str = claims.get("email")
         username = email.split("@")[0]
@@ -30,3 +32,13 @@ class OIDCUserAuthenticationBackend(OIDCAuthenticationBackend):
         user.username = self.get_username(claims)
         user.save()
         return user
+
+    def get_userinfo(self, access_token, id_token, payload):
+        print(access_token)
+        print(id_token)
+        print(payload)
+        return super().get_userinfo(access_token, id_token, payload)
+
+
+class OIDCUserAuthentication(OIDCAuthentication):
+    pass
