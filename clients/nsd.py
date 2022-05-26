@@ -8,6 +8,9 @@ from grades.models import Semester, Course, Grade
 """
 API documentation can be found at:
 https://dbh.nsd.uib.no/dbhvev/dokumenter/api/api_dokumentasjon.pdf
+
+Or table documentation found at:
+https://dbh.hkdir.no/datainnhold/tabell-dokumentasjon
 """
 
 
@@ -21,7 +24,7 @@ class FilterType(TextChoices):
 
 
 class NSDGradeClient(Client):
-    base_url = "https://api.nsd.no"
+    base_url = "https://dbh.hkdir.no"
     api_version = 1
     table_id = 308
     status_line = False  # Should extra information about the API response be included?
@@ -34,7 +37,7 @@ class NSDGradeClient(Client):
         self.session.headers.update({"Content-type": "application/json"})
 
     def get_json_table_url(self):
-        return f"{self.base_url}/dbhapitjener/Tabeller/hentJSONTabellData"
+        return f"{self.base_url}/api/Tabeller/hentJSONTabellData"
 
     def create_filter(self, name: str, filter_type: FilterType, values):
         return {
