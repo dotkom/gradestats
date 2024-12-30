@@ -4,7 +4,14 @@ $(function() {
 
     function createGraph(data){
         var s1, ticks, colors;
-        if(data.passed === 0){
+        if (data.passed !== 0 && data.average_grade !== 0) {
+            s1 = [data.a, data.b, data.c, data.d, data.e, data.f, data.passed]
+            ticks = ['A', 'B', 'C', 'D', 'E', 'F', 'Bestått'];
+            colors = [ "#00CC00", "#00CC33", "#CCFF33", "#FFFF00", "#FF6600", "#CC0000", "#00CC00"];
+            barMargin = 2;
+            max = null;
+        }
+        else if(data.passed === 0){
             s1 = [data.a, data.b, data.c, data.d, data.e, data.f]
             ticks = ['A', 'B', 'C', 'D', 'E', 'F'];
             colors = [ "#00CC00", "#00CC33", "#CCFF33", "#FFFF00", "#FF6600", "#CC0000"];

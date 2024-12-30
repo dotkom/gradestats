@@ -140,34 +140,30 @@ class NSDGradeClient(Client):
 
         student_count = a + b + c + d + e + f
 
-        is_pass_fail = any(map(lambda number: number != 0, [passed, failed]))
-        is_graded = any(map(lambda number: number != 0, [a, b, c, d, e, f]))
-
-        if is_pass_fail and is_graded:
-            raise Exception("Course is both pass/fail and graded by letters")
-
-        if is_pass_fail:
-            data = {
-                "passed": passed,
-                "f": failed,
-                "average_grade": 0,
-            }
-        else:
+        if student_count > 0:
             average_grade = (a * 5.0 + b * 4 + c * 3 + d * 2 + e) / student_count
-            data = {
-                "a": a,
-                "b": b,
-                "c": c,
-                "d": d,
-                "e": e,
-                "f": f,
-                "average_grade": average_grade,
-            }
+        else:
+            average_grade = 0
 
-        course = Course.objects.get(code=course_code)
-        data.update(
-            {"course_id": course.id, "semester": str(semester), "year": year,}
-        )
+        course_id = Course.all_objects.filter(code=course_code).values("id").first()
+        if course_id:
+            course_id = course_id["id"]
+        else:
+            raise ValueError(f"Course with code {course_code} does not exist")
+
+        data = {
+            "a": a,
+            "b": b,
+            "c": c,
+            "d": d,
+            "e": e,
+            "f": f + failed,  # Combine data for semesters with both pass/fail and graded exams
+            "average_grade": average_grade,
+            "passed": passed,
+            "course_id": course_id,
+            "semester": str(semester),
+            "year": year,
+        }
 
         return data
 
