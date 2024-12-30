@@ -12,6 +12,8 @@ from clients.course_pages import CoursePagesClient
 from clients.karstat import KarstatGradeClient
 from clients.nsd import NSDGradeClient
 from clients.tia import TIACourseClient, TIADepartmentClient, TIAFacultyClient
+from services.course_service import CourseService
+from services.grade_service import GradeService
 from grades.models import (
     Course,
     Grade,
@@ -44,6 +46,7 @@ from .serializers import (
     TIAObjectListRefreshSerializer,
     KarstatGradeReportSerializer,
     NSDGradeReportSerializer,
+    NSDFullGradeReportSerializer,
 )
 
 
@@ -72,9 +75,10 @@ class CourseViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     )
     def refresh_course_pages(self, request, *args, **kwargs):
         course = self.get_object()
-        client = CoursePagesClient()
-        client.update_course(course_code=course.code)
-        course.refresh_from_db()
+
+        course_service = CourseService()
+
+        course = course_service.create_or_update_course(course.code)
         serializer = self.get_serializer(instance=course)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
@@ -275,15 +279,39 @@ class NSDScraperViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.data
-        client = NSDGradeClient()
-        grade = client.update_grade(
+
+        grade_service = GradeService()
+        grade = grade_service.create_or_update_grades_for_semester(
             course_code=data.get("course"),
             year=data.get("year"),
             semester=data.get("semester"),
         )
+
         if not grade:
             return Response(status=status.HTTP_404_NOT_FOUND)
         grade_serializer = GradeSerializer(instance=grade)
+        return Response(status=status.HTTP_200_OK, data=grade_serializer.data)
+
+    @action(
+        url_path="full-grade-report",
+        detail=False,
+        methods=["POST"],
+        serializer_class=NSDFullGradeReportSerializer,
+        permission_classes=(permissions.AllowAny,),
+    )
+    def full_grade_report(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
+
+        grade_service = GradeService()
+        grades = grade_service.create_or_update_grades_for_course(
+            course_code=data.get("course")
+        )
+
+        if not grades:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        grade_serializer = GradeSerializer(instance=grades, many=True)
         return Response(status=status.HTTP_200_OK, data=grade_serializer.data)
 
 
