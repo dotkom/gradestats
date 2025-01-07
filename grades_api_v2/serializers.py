@@ -198,26 +198,10 @@ class TIAObjectListRefreshSerializer(serializers.Serializer):
         )
 
 
-class KarstatGradeReportSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
-    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
-    year = serializers.IntegerField()
-    semester = serializers.ChoiceField(choices=Semester.choices)
-
-    class Meta:
-        fields = (
-            "username",
-            "password",
-            "department",
-            "year",
-            "semester",
-        )
-
-
 class NSDGradeReportSerializer(serializers.Serializer):
     course = serializers.SlugRelatedField(
-        queryset=Course.objects.all(), slug_field="code",
+        queryset=Course.objects.all(),
+        slug_field="code",
     )
     year = serializers.IntegerField()
     semester = serializers.ChoiceField(choices=Semester.choices)
@@ -228,3 +212,13 @@ class NSDGradeReportSerializer(serializers.Serializer):
             "year",
             "semester",
         )
+
+
+class NSDFullGradeReportSerializer(serializers.Serializer):
+    course = serializers.SlugRelatedField(
+        queryset=Course.objects.all(),
+        slug_field="code",
+    )
+
+    class Meta:
+        fields = "course"

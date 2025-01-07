@@ -51,9 +51,6 @@ UserFavouritesRouter = UserRouter.register(
 TIAScraperRouter = router.register(
     "scrapers/tia", views.TIAScraperViewSet, basename="scrapers-tia"
 )
-KarstatScraperRouter = router.register(
-    "scrapers/karstat", views.KarstatScraperViewSet, basename="scrapers-karstat"
-)
 NSDScraperRouter = router.register(
     "scrapers/nsd", views.NSDScraperViewSet, basename="scrapers-nsd"
 )

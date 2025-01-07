@@ -9,19 +9,24 @@ from django.urls import reverse
 User = get_user_model()
 
 
-class CourseManager(models.Manager):
+class UnfilteredCourseManager(models.Manager):
     def get_queryset(self):
         queryset = (
             super()
             .get_queryset()
-            .filter(attendee_count__gt=4)
             .annotate(watson_rank=models.Value(1.0, output_field=models.FloatField()))
         )
         return queryset.distinct()
 
 
+class CourseManager(UnfilteredCourseManager):
+    def get_queryset(self):
+        return super().get_queryset().filter(attendee_count__gt=4)
+
+
 class Course(models.Model):
     objects = CourseManager()
+    all_objects = UnfilteredCourseManager()
 
     norwegian_name = models.CharField("Norwegian Name", max_length=255)
     short_name = models.CharField("Short name", max_length=50)
@@ -81,14 +86,11 @@ class Semester(models.TextChoices):
     AUTUMN = "AUTUMN", "Høst"
 
 
-class GradeManager(models.Manager):
-    use_for_related_fields = True
-
+class UnfilteredGradeManager(models.Manager):
     def get_queryset(self):
         return (
             super()
             .get_queryset()
-            .filter(course__attendee_count__gt=4)
             .annotate(
                 attendee_count=ExpressionWrapper(
                     F("a") + F("b") + F("c") + F("d") + F("e") + F("f") + F("passed"),
@@ -105,14 +107,24 @@ class GradeManager(models.Manager):
             )
             .annotate(
                 semester_code=Concat(
-                    F("semester_letter"), F("year"), output_field=models.CharField(),
+                    F("semester_letter"),
+                    F("year"),
+                    output_field=models.CharField(),
                 )
             )
         )
 
 
+class GradeManager(UnfilteredGradeManager):
+    use_for_related_fields = True
+
+    def get_queryset(self):
+        return super().get_queryset().filter(course__attendee_count__gt=4)
+
+
 class Grade(models.Model):
     objects = GradeManager()
+    all_objects = UnfilteredGradeManager()
 
     course = models.ForeignKey(Course, related_name="grades", on_delete=models.CASCADE)
     year = models.PositiveSmallIntegerField("År")
