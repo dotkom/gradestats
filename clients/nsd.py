@@ -5,6 +5,7 @@ from json import JSONDecodeError
 from .client import Client
 
 from grades.models import Semester, Course, Grade
+from grades.utils import update_course_stats
 
 """
 API documentation can be found at:
@@ -128,7 +129,8 @@ class NSDGradeClient(NSDClient):
         if len(grade_results) == 0:
             return 0
         elif len(grade_results) > 1:
-            raise Exception("Found more than a single grade entry for a course")
+            # Some codes have different course versions like -2. Use the highest version
+            grade_results.sort(key=lambda r: r["Emnekode"], reverse=True)
 
         grade_result = grade_results[0]
         return int(grade_result.get("Antall kandidater totalt"))
@@ -217,6 +219,8 @@ class NSDGradeClient(NSDClient):
                 year=year,
             ).update(**grade_data)
             grade.refresh_from_db()
+
+            update_course_stats(grade.course)
         except Grade.DoesNotExist:
             grade = Grade.objects.create(**grade_data)
 
