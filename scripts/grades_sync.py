@@ -21,7 +21,7 @@ session = requests.session()
 
 
 def validate_course_code(code):
-    return re.match(r"^[a-zA-Z0-9-_\sæøå]+$", code)
+    return re.match(r"^[a-zA-Z0-9-_\sæøåÆØÅ]+$", code)
 
 
 def main():

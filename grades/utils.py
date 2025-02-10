@@ -1,11 +1,11 @@
+from typing import List
 from django.core.mail import send_mail
 from django.conf import settings
 
-from .models import Course, Report
+from .models import Course, Report, Grade
 
 
-def calculate_average_grade(course: Course):
-    grades = course.grades.all()
+def calculate_average_grade(grades: List[Grade]):
     average = 0
     attendees = 0
     for grade in grades:
@@ -18,8 +18,7 @@ def calculate_average_grade(course: Course):
         return average
 
 
-def calculate_total_attendees(course: Course):
-    grades = course.grades.all()
+def calculate_total_attendees(grades: List[Grade]):
     attendees = 0
     for grade in grades:
         attendees += grade.attendee_count
@@ -28,10 +27,11 @@ def calculate_total_attendees(course: Course):
 
 
 def update_course_stats(course: Course):
-    average = calculate_average_grade(course)
+    grades = Grade.all_objects.filter(course_id=course.id)
+    average = calculate_average_grade(grades)
     course.average = average
 
-    attendee_count = calculate_total_attendees(course)
+    attendee_count = calculate_total_attendees(grades)
     course.attendee_count = attendee_count
 
     course.save()
