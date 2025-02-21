@@ -5,6 +5,7 @@ from json import JSONDecodeError
 from .client import Client
 
 from grades.models import Semester, Course, Grade
+from grades.utils import update_course_stats
 
 """
 API documentation can be found at:
@@ -128,7 +129,8 @@ class NSDGradeClient(NSDClient):
         if len(grade_results) == 0:
             return 0
         elif len(grade_results) > 1:
-            raise Exception("Found more than a single grade entry for a course")
+            # Some codes have different course versions like -2. Use the highest version
+            grade_results.sort(key=lambda r: r["Emnekode"], reverse=True)
 
         grade_result = grade_results[0]
         return int(grade_result.get("Antall kandidater totalt"))
@@ -136,6 +138,7 @@ class NSDGradeClient(NSDClient):
     def build_grade_data_from_results(
         self, results, course_code: str, year: int, semester: Semester
     ):
+        average_grade = 0
         passed = self.resolve_result_for_grade(results, "G")
         failed = self.resolve_result_for_grade(results, "H")
         a = self.resolve_result_for_grade(results, "A")
@@ -147,10 +150,27 @@ class NSDGradeClient(NSDClient):
 
         student_count = a + b + c + d + e + f
 
-        if student_count > 0:
-            average_grade = (a * 5.0 + b * 4 + c * 3 + d * 2 + e) / student_count
-        else:
+        is_pass_fail = any(map(lambda number: number != 0, [passed, failed]))
+        is_graded = any(map(lambda number: number != 0, [a, b, c, d, e, f]))
+
+        if is_pass_fail and is_graded:
+            print(
+                "Course is both pass/failed and graded by letters. Ignoring pass/fail"
+            )
+            is_pass_fail = False
+
+        if is_pass_fail:
             average_grade = 0
+            a = 0
+            b = 0
+            c = 0
+            d = 0
+            e = 0
+            f = failed
+        else:
+            if student_count > 0:
+                average_grade = (a * 5.0 + b * 4 + c * 3 + d * 2 + e) / student_count
+            passed = 0
 
         course_id = Course.all_objects.filter(code=course_code).values("id").first()
         if course_id:
@@ -164,7 +184,7 @@ class NSDGradeClient(NSDClient):
             "c": c,
             "d": d,
             "e": e,
-            "f": f + failed,  # Combine data for semesters with both pass/fail and graded exams
+            "f": f,
             "average_grade": average_grade,
             "passed": passed,
             "course_id": course_id,
@@ -199,6 +219,8 @@ class NSDGradeClient(NSDClient):
                 year=year,
             ).update(**grade_data)
             grade.refresh_from_db()
+
+            update_course_stats(grade.course)
         except Grade.DoesNotExist:
             grade = Grade.objects.create(**grade_data)
 

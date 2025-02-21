@@ -14,6 +14,7 @@ class CoursePagesClient(Client):
         "se engelsk utgave",
         "see engelsk version",
         "see english text",
+        "se emnets engelske nettside",
     ]
 
     def extract_div_content(self, soup, div_id):
@@ -29,10 +30,12 @@ class CoursePagesClient(Client):
         for element in div.children:
             if element.name:
                 if element.name == "p":
-                    result.append(pDelimiter + element.get_text(strip=True))
+                    result.append(
+                        pDelimiter + element.get_text(strip=True, separator="\n")
+                    )
                 elif element.name == "ul" or element.name == "ol":
                     result.extend(
-                        liDelimiter + li.get_text(strip=True)
+                        liDelimiter + li.get_text(strip=True, separator="\n")
                         for li in element.find_all("li")
                     )
             elif element.string:
@@ -87,6 +90,8 @@ class CoursePagesClient(Client):
     def get_study_level_from_description(description: str):
         if description == "Doktorgrads nivå":
             return 900
+        elif description == "Videreutdanning høyere grad":
+            return 850
         elif description == "Videreutdanning lavere grad":
             return 800
         elif description == "Høyere grads nivå":
@@ -203,6 +208,8 @@ class CoursePagesClient(Client):
             classes = undervisning.get_text().split("Undervises")
             try:
                 place = undervisning.get_text().split("Sted:")[1].strip()
+                # Remove whitespace
+                place = " ".join(place.split()).replace(" ,", ",")
             except IndexError:
                 print("Cannot get place")
             for elements in classes:
