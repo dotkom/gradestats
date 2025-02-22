@@ -46,6 +46,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "watson_rank",
             "attendee_count",
             "department",
+            "pass_rate",
         )
 
 
@@ -79,7 +80,8 @@ class GradeSerializer(serializers.ModelSerializer):
 class CourseTagSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source="tag.tag")
     course = serializers.SlugRelatedField(
-        queryset=Course.objects.all(), slug_field="code",
+        queryset=Course.objects.all(),
+        slug_field="code",
     )
     user = serializers.SerializerMethodField()
 
@@ -162,7 +164,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ReportSerializer(serializers.ModelSerializer):
     course = serializers.SlugRelatedField(
-        queryset=Course.objects.all(), allow_null=True, slug_field="code",
+        queryset=Course.objects.all(),
+        allow_null=True,
+        slug_field="code",
     )
 
     class Meta:

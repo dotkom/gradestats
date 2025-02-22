@@ -35,6 +35,7 @@ class CourseFilter(filterset.FilterSet):
             "average": ["exact", "lte", "gte"],
             "attendee_count": ["exact", "lte", "gte"],
             "department": ["exact"],
+            "pass_rate": ["exact", "lte", "gte"],
         }
 
 

@@ -52,6 +52,7 @@ class Course(models.Model):
 
     average = models.FloatField(default=0)
     attendee_count = models.IntegerField(default=0)
+    pass_rate = models.FloatField(default=0)
 
     department = models.ForeignKey(
         to="Department", related_name="courses", on_delete=models.SET_NULL, null=True
@@ -161,7 +162,13 @@ class Grade(models.Model):
 
     class Meta:
         default_manager_name = "objects"
-        unique_together = (("course", "semester", "year",),)
+        unique_together = (
+            (
+                "course",
+                "semester",
+                "year",
+            ),
+        )
 
 
 class Tag(models.Model):
@@ -191,7 +198,12 @@ class CourseTag(models.Model):
     )
 
     class Meta:
-        unique_together = (("course", "tag",),)
+        unique_together = (
+            (
+                "course",
+                "tag",
+            ),
+        )
 
 
 class Favourite(models.Model):
@@ -276,7 +288,10 @@ class Faculty(InstitutionalUnit):
 
 class Department(InstitutionalUnit):
     faculty = models.ForeignKey(
-        to=Faculty, related_name="departments", on_delete=models.CASCADE, null=True,
+        to=Faculty,
+        related_name="departments",
+        on_delete=models.CASCADE,
+        null=True,
     )
     department_id = models.PositiveIntegerField("InstituttsID")
 

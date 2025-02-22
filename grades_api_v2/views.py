@@ -61,6 +61,7 @@ class CourseViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         "english_name",
         "average",
         "attendee_count",
+        "pass_rate",
     )
 
     @action(
@@ -206,10 +207,12 @@ class TIAScraperViewSet(viewsets.GenericViewSet):
         data = serializer.data
         client = scraper_client_class()
         client.login(
-            username=data.get("username"), password=data.get("password"),
+            username=data.get("username"),
+            password=data.get("password"),
         )
         objects = client.refresh_objects(
-            limit=data.get("limit"), skip=data.get("skip"),
+            limit=data.get("limit"),
+            skip=data.get("skip"),
         )
         objects_serializer = object_serializer_class(instance=objects, many=True)
         return Response(status=status.HTTP_200_OK, data=objects_serializer.data)
