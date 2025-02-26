@@ -18,6 +18,21 @@ def calculate_average_grade(grades: List[Grade]):
         return average
 
 
+def calculate_pass_rate(grades: List[Grade]):
+    total = 0
+    total_failed = 0
+    for grade in grades:
+        total += (
+            grade.a + grade.b + grade.c + grade.d + grade.e + grade.f + grade.passed
+        )
+        total_failed += grade.f
+
+    if total == 0:
+        return 0.0
+    else:
+        return (total - total_failed) * 100 / total
+
+
 def calculate_total_attendees(grades: List[Grade]):
     attendees = 0
     for grade in grades:
@@ -30,6 +45,8 @@ def update_course_stats(course: Course):
     grades = Grade.all_objects.filter(course_id=course.id)
     average = calculate_average_grade(grades)
     course.average = average
+    pass_rate = calculate_pass_rate(grades)
+    course.pass_rate = pass_rate
 
     attendee_count = calculate_total_attendees(grades)
     course.attendee_count = attendee_count
