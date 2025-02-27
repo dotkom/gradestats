@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("grades", "0005_auto_20200512_2008"),
     ]
@@ -16,6 +15,8 @@ class Migration(migrations.Migration):
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name="course", name="average", field=models.FloatField(default=0),
+            model_name="course",
+            name="average",
+            field=models.FloatField(default=0),
         ),
     ]

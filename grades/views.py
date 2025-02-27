@@ -10,7 +10,6 @@ import uuid
 
 
 def navbar_render(request, args, dictionary={}):
-
     kwargs = {"navbar": NavbarItems.get_items()}
     kwargs.update(dictionary)
 
@@ -102,7 +101,7 @@ def report(request):
         messages = [
             {
                 "tags": "success",
-                "text": u"Takk for at du hjelper til med å gjøre denne siden bedre!",
+                "text": "Takk for at du hjelper til med å gjøre denne siden bedre!",
             }
         ]
 
@@ -114,24 +113,24 @@ def report(request):
         xml_file = File(f)
 
         text = (
-            u'<?xml version="1.0" encoding="UTF-8"?>',
-            u'<!DOCTYPE bank SYSTEM "report.dtd">',
-            u'<report xmlns="http://www.w3schools.com"',
-            u'\txmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
-            u'\txsi:schemaLocation="report.xsd">',
-            u"\t<course>",
-            u"\t\t" + form.cleaned_data["course_code"],
-            u"\t</course>",
-            u"\t<semester>",
-            u"\t\t" + form.cleaned_data["semester_code"],
-            u"\t</semester>",
-            u"\t<description>",
-            u"\t\t" + form.cleaned_data["description"],
-            u"\t</description>",
-            u"</report>",
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<!DOCTYPE bank SYSTEM "report.dtd">',
+            '<report xmlns="http://www.w3schools.com"',
+            '\txmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
+            '\txsi:schemaLocation="report.xsd">',
+            "\t<course>",
+            "\t\t" + form.cleaned_data["course_code"],
+            "\t</course>",
+            "\t<semester>",
+            "\t\t" + form.cleaned_data["semester_code"],
+            "\t</semester>",
+            "\t<description>",
+            "\t\t" + form.cleaned_data["description"],
+            "\t</description>",
+            "</report>",
         )
 
-        xml_file.write(u"\n".join(text).encode("utf8"))
+        xml_file.write("\n".join(text).encode("utf8"))
         xml_file.close()
 
         return navbar_render(request, "report.html", {"messages": messages})

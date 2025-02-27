@@ -48,7 +48,9 @@ router.register(
     GradeViewSet,
 )
 router.register("api/index", CourseIndexViewSet, basename="course_index")
-router.register("api/typeahead/course", CourseTypeaheadViewSet, basename="course_typeahead")
+router.register(
+    "api/typeahead/course", CourseTypeaheadViewSet, basename="course_typeahead"
+)
 
 urlpatterns += format_suffix_patterns(router.urls, allowed=["json"])
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

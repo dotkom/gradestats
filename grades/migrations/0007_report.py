@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("grades", "0006_auto_20200512_2029"),
     ]
@@ -40,6 +39,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("-created_date",),},
+            options={
+                "ordering": ("-created_date",),
+            },
         ),
     ]

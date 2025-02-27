@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("grades", "0006_department"),
         ("grades", "0012_coursetag_created_by"),
