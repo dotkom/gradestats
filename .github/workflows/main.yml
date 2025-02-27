@@ -12,6 +12,8 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Test
+        env:
+            DJANGO_SETTINGS_MODULE: gradestats.settings.dev
         run: uv run python manage.py test
 
 
