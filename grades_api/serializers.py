@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from grades.models import *
+from grades.models import Course, Grade
 
 
 class GradeSerializer(serializers.ModelSerializer):

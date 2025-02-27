@@ -2,8 +2,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from grades.models import *
-from grades.forms import *
+from grades.models import Course, Tag, NavbarItems
+from grades.forms import AddTagForm, SearchForm, ReportErrorForm
 from django.core.files import File
 import os
 import uuid

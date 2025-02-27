@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from grades.models import *
+from grades.models import Course, Grade, Tag, Report
 
 
 @admin.register(Course)

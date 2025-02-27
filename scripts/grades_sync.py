@@ -10,11 +10,11 @@ import re
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gradestats.settings")
 django.setup()
 
-from services.course_service import CourseService
-from services.grade_service import GradeService
+from services.course_service import CourseService  # noqa: E402
+from services.grade_service import GradeService  # noqa: E402
 
-from grades.models import Faculty, Department
-from clients.nsd import NSDGradeClient, NSDCourseClient
+from grades.models import Faculty, Department  # noqa: E402
+from clients.nsd import NSDGradeClient, NSDCourseClient  # noqa: E402
 
 session = requests.session()
 
