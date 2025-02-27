@@ -6,7 +6,6 @@ import requests
 from operator import itemgetter
 from itertools import groupby
 import re
-import sys
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gradestats.settings")
 django.setup()

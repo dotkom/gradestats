@@ -1,5 +1,11 @@
 from rest_framework import viewsets
-from grades_api.serializers import *
+from grades.models import Course, Grade, Tag
+from grades_api.serializers import (
+    CourseSerializer,
+    GradeSerializer,
+    CourseIndexSerializer,
+    CourseTypeaheadSerializer,
+)
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.db.models import Q

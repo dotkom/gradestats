@@ -15,6 +15,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.request",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.i18n",
                 "django.template.context_processors.media",
@@ -28,6 +29,7 @@ TEMPLATES = [
 
 # Application definition
 INSTALLED_APPS = (
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -63,7 +65,7 @@ AUTHENTICATION_BACKENDS = (
 
 ROOT_URLCONF = "gradestats.urls"
 
-WSGI_APPLICATION = "gradestats.wsgi.application"
+ASGI_APPLICATION = "gradestats.asgi.application"
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
@@ -82,6 +84,8 @@ DATABASES = {
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SECRET_KEY = ""
 
