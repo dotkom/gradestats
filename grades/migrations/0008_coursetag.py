@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("grades", "0007_report"),
     ]
@@ -40,6 +39,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"unique_together": {("course", "tag")},},
+            options={
+                "unique_together": {("course", "tag")},
+            },
         ),
     ]

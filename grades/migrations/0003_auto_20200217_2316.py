@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("grades", "0002_grade_digital_exam")]
 
     operations = [

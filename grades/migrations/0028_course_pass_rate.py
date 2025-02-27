@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('grades', '0027_favourite'),
+        ("grades", "0027_favourite"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='pass_rate',
+            model_name="course",
+            name="pass_rate",
             field=models.FloatField(default=0),
         ),
     ]

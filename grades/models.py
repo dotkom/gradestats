@@ -239,7 +239,7 @@ class Report(models.Model):
     def subject(self):
         if self.course:
             return f"Ny rapport i emnet {self.course.code} fra grades.no"
-        return f"Ny rapport fra grades.no"
+        return "Ny rapport fra grades.no"
 
     @property
     def email_description(self):

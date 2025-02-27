@@ -181,7 +181,7 @@ class CoursePagesClient(Client):
         credit = -1
         try:
             credit = float(facts_about_course[2].split("\n")[2][20:24])
-        except:
+        except:  # noqa: E722
             print("Not valid number")
 
         norwegian_name = self.extract_course_name(soup_no)

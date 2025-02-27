@@ -103,7 +103,7 @@ def retrieve_exam_type_of_years(
                 continue
 
             system: Optional[bs4.element.Tag] = dt.find(class_="exam-system")
-            exam_status: Optional[bs4.element.Tag] = dt.find(class_="exam-code")
+            # exam_status: Optional[bs4.element.Tag] = dt.find(class_="exam-code")
 
             term_std = ""
             term_txt = term.text.strip()

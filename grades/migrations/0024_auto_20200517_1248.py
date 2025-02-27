@@ -23,7 +23,6 @@ def merge_semester_code(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("grades", "0023_auto_20200517_1248"),
     ]

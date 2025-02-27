@@ -12,7 +12,6 @@ def create_through_relations(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("grades", "0008_coursetag"),
     ]

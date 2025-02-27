@@ -1,4 +1,5 @@
-from gradestats.settings.base import *
+from gradestats.settings.base import BASE_DIR
+from gradestats.settings.base import *  # noqa: F403
 import os
 
 DEBUG = False

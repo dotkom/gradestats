@@ -7,33 +7,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-
-      - name: Install python dependencies
-        run: pip install -r requirements.txt
+      - name: Test
+        env:
+            DJANGO_SETTINGS_MODULE: gradestats.settings.dev
+        run: uv run python manage.py test
 
 
-  lint-black:
+  lint-ruff:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
 
-      - name: Install python dependencies
-        run: pip install -r requirements.txt
 
-      - name: Run black
-        run: black --check grades grades_api grades_api_v2 gradestats scripts clients
+      - name: Run ruff
+        run: uv run ruff check grades grades_api grades_api_v2 gradestats scripts clients
+      - name: Run ruff format
+        run: uv run ruff format --check grades grades_api grades_api_v2 gradestats scripts clients
 
   check-migrations:
     runs-on: ubuntu-latest
@@ -41,15 +38,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-
-      - name: Install python dependencies
-        run: pip install -r requirements.txt
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
 
       - name: Check migrations
         env:
           DJANGO_SETTINGS_MODULE: gradestats.settings.dev
-        run: python manage.py makemigrations --check
+        run: uv run python manage.py makemigrations --check

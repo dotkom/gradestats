@@ -5,14 +5,14 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("grades", "0003_auto_20200217_2316"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name="grade", options={"default_manager_name": "objects"},
+            name="grade",
+            options={"default_manager_name": "objects"},
         ),
         migrations.AlterField(
             model_name="grade",

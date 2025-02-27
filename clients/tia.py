@@ -95,7 +95,7 @@ class TIACourseClient(TIAClient):
         return f"{self.base_url}/emne/emnekode/{object_id}"
 
     def get_list_url(self, limit: int, skip: int):
-        return f"{self.base_url}/emne" f"?limit={limit}" f"&skip={skip}"
+        return f"{self.base_url}/emne?limit={limit}&skip={skip}"
 
     def parse_term_code(self, term_code: str) -> [str, int]:
         """
@@ -214,7 +214,9 @@ class TIAFacultyClient(TIAOrganizationUnitClient):
         faculty_id = orgreg2_org.get("facNr")
 
         organization_data.update(
-            {"faculty_id": faculty_id,}
+            {
+                "faculty_id": faculty_id,
+            }
         )
 
         return organization_data
