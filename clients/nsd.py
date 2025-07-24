@@ -97,11 +97,13 @@ class NSDClient(Client):
             "statuslinje": "J" if self.status_line else "N",
             "kodetekst": "J" if self.code_text else "N",
             "desimal_separator": self.decimal_separator,
-            "groupBy": group_by,
             "sortBy": sort_by,
             "variabler": ["*"],
             "filter": filters,
         }
+
+        if group_by:
+            query["groupBy"] = group_by
 
         if limit:
             query["begrensning"] = str(limit)
