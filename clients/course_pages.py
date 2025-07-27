@@ -70,18 +70,8 @@ class CoursePagesClient(Client):
         if om_eksamen is None:
             return False
 
-        dl: Optional[bs4.element.Tag] = om_eksamen.find("dl")
-        if dl is None:
-            return False
-
-        for dt in dl.find_all("dt"):
-            term: Optional[bs4.element.Tag] = dt.find(class_="exam-term")
-            if term is None:
-                continue
-
-            system: Optional[bs4.element.Tag] = dt.find(class_="exam-system")
-
-            if system.text.strip() == "INSPERA":
+        for anchor in om_eksamen.find_all("a"):
+            if anchor.text.strip() == "Inspera Assessment":
                 return True
 
         return False
@@ -121,6 +111,9 @@ class CoursePagesClient(Client):
     def normalize(string: str):
         return string.replace("\xa0\xc2", " ").replace("\xc2", " ").replace("\xa0", " ")
 
+    def remove_whitespace(self, string: str):
+        return " ".join(string.split())
+
     def get_course_data(self, code, year: int = None):
         year_segment = ""
         if year:
@@ -151,10 +144,10 @@ class CoursePagesClient(Client):
 
         no_longer_taught_text = "Det tilbys ikke lenger undervisning i emnet."
         try:
-            strong_text = soup_no.find("div", {"class": "content"}).p.strong.get_text(
+            course_details = soup_no.find("div", {"id": "course-details"}).get_text(
                 strip=True
             )
-            if strong_text == no_longer_taught_text:
+            if no_longer_taught_text in course_details:
                 year_info = f" in year {year}" if year else ""
                 print(f"Course {code} not taught{year_info}")
                 return None
@@ -168,32 +161,8 @@ class CoursePagesClient(Client):
         text_eng = self.normalize(data_eng.text)
         soup_eng = self.init_soup(text_eng)
 
-        facts_about_course = ""
-        try:
-            facts_about_course = (
-                soup_no.findAll("div", {"class": "card-body"})[1]
-                .p.get_text()
-                .split(":")
-            )
-        except IndexError:
-            print("Cannot find facts about course at all, code " + code)
-
-        credit = -1
-        try:
-            credit = float(facts_about_course[2].split("\n")[2][20:24])
-        except:  # noqa: E722
-            print("Not valid number")
-
         norwegian_name = self.extract_course_name(soup_no)
         english_name = self.extract_course_name(soup_eng)
-
-        if len(facts_about_course) > 3:
-            course_level_text = facts_about_course[3].split("\n")[0][
-                1 : len(facts_about_course[3].split("\n")[0])
-            ]
-            study_level = self.get_study_level_from_description(course_level_text)
-        else:
-            study_level = 0
 
         last_year_taught = 0
         taught_from = 2008
@@ -202,49 +171,53 @@ class CoursePagesClient(Client):
         taught_in_english = False
 
         place = ""
-
-        try:
-            undervisning = soup_no.find_all("div", {"class": "card-body"})[2]
-            classes = undervisning.get_text().split("Undervises")
-            try:
-                place = undervisning.get_text().split("Sted:")[1].strip()
-                # Remove whitespace
-                place = " ".join(place.split()).replace(" ,", ",")
-            except IndexError:
-                print("Cannot get place")
-            for elements in classes:
-                if "HØST" in elements:
-                    taught_in_autumn = True
-                if "VÅR" in elements:
-                    taught_in_spring = True
-                if "Engelsk" in elements:
-                    taught_in_english = True
-        except IndexError:
-            print("Cannot get undervisning")
-
         exam_type = ""
         grade_type = ""
-        try:
-            exam_type_raw = (
-                soup_no.find_all("div", {"class": "content-assessment"})[0]
-                .p.contents[0]
-                .strip()
-                .split(":")[1]
-            )
-            exam_type = exam_type_raw[1 : len(exam_type_raw)]
-        except IndexError:
-            print("Cannot get exam type")
+        study_level = 0
+        credit = 0
 
-        try:
-            grade_type_raw = (
-                soup_no.find_all("div", {"class": "content-assessment"})[0]
-                .p.contents[2]
-                .strip()
-                .split(":")[1]
-            )
-            grade_type = grade_type_raw[1 : len(grade_type_raw)]
-        except IndexError:
-            print("Cannot get exam type")
+        for fact in soup_no.select(".course-fact"):
+            label = fact.select_one(".course-fact-label")
+            value = fact.select_one(".course-fact-value")
+
+            if not label or not value:
+                continue
+
+            label = label.get_text().strip()
+            value = value.get_text().strip()
+            if label == "Studiepoeng":
+                try:
+                    credit = float(value.replace(",", "."))
+                except:  # noqa: E722
+                    print("Not valid number")
+            elif label == "Nivå":
+                study_level = self.get_study_level_from_description(value)
+            elif label == "Undervisningsstart":
+                if "høst" in value.lower():
+                    taught_in_autumn = True
+                if "vår" in value.lower():
+                    taught_in_spring = True
+            elif label == "Sted":
+                # Html is formatted incorrectly on place, label is inside value div
+                try:
+                    place = self.remove_whitespace(value.split("\n")[-1])
+                except:  # noqa: E722
+                    print("Couldn't get place")
+            elif label == "Vurderingsordning":
+                exam_type = self.remove_whitespace(value)
+            elif label == "Undervisningsspråk":
+                if "engelsk" in value.lower():
+                    taught_in_english = True
+
+        about_exam = soup_no.select_one("#omEksamen")
+        if about_exam:
+            try:
+                grade_type_raw = about_exam.select_one(".grade-rule-heading")
+                grade_type = self.remove_whitespace(
+                    grade_type_raw.get_text().split(":")[1]
+                )
+            except:  # noqa: E722
+                "Cannot get grade type"
 
         content = self.extract_div_content(soup_no, "course-content-toggler")
         if self.use_english_version(content):

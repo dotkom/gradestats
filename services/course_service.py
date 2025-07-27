@@ -109,7 +109,12 @@ class CourseService:
         if end_year == 0 or end_year > start_year:
             end_year = max(start_year - 5, default_end_year)
 
-        try_limit = 8
+        try_limit = 6
+
+        # For existing courses, older years will have been scraped previously
+        existing_course = Course.all_objects.filter(code=code)
+        if existing_course:
+            try_limit = 2
 
         for try_count, year in enumerate(range(start_year, end_year - 1, -1), start=1):
             if try_count > try_limit:
